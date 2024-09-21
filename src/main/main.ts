@@ -601,7 +601,7 @@ ipcMain.on('startQRLogin', async (event, shouldRemember) => {
   let user = new SteamUser();
   let csgo = new GlobalOffensive(user);
   let loginClass = new login();
-  emitterAccount.emit('qrLogin:cancel');
+  emitterAccount.emit('qrLogin:cancel')
   flowLoginRegularQR(shouldRemember).then((returnValue) => {
     if (!returnValue.session) {
       return;
@@ -995,7 +995,12 @@ async function settingsSetup() {
       setValue('devmode', false);
     }
   });
-  setValue('fastmove', false);
+  getValue('fastmove').then((returnValue) => {
+    if (returnValue == undefined) {
+      console.log('fastmove', returnValue);
+      setValue('fastmove', false);
+    }
+  });
 }
 settingsSetup();
 

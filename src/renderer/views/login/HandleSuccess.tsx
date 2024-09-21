@@ -22,6 +22,8 @@ export async function handleSuccess(returnSuccessPackage: LoginCommandReturnPack
   const StoreClass = new DispatchStore(dispatch)
   const IPCClass = new DispatchIPC(dispatch)
 
+  // Source
+  StoreClass.run(StoreClass.buildingObject.source)
   // Locale
   StoreClass.run(StoreClass.buildingObject.locale)
 
