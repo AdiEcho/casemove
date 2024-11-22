@@ -25,10 +25,10 @@ export interface RenameModalPayload {
 
 // // Prices
 interface pricingSources {
-  buff163: number,
-  steam_listings: number
-  skinport: number
-  bitskins: string
+  buff163: number;
+  steam_listing: number;
+  skinport: number;
+  bitskins: string;
 }
 export interface SubPrices {
   [key: string]: pricingSources

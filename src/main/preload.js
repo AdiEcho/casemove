@@ -1,5 +1,5 @@
 const { contextBridge, ipcRenderer } = require('electron');
-var ByteBuffer = require('bytebuffer');
+const ByteBuffer = require('bytebuffer');
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
@@ -116,7 +116,7 @@ contextBridge.exposeInMainWorld('electron', {
     startQRLogin(shouldRemember) {
       return new Promise((resolve) => {
         ipcRenderer.removeAllListeners('login-reply');
-        
+
         ipcRenderer.send('startQRLogin', shouldRemember);
         ipcRenderer.once('login-reply', (event, arg) => {
           resolve(arg);
@@ -205,7 +205,7 @@ contextBridge.exposeInMainWorld('electron', {
     // Commands
     moveFromStorageUnit(casketID, itemID, fastMode) {
       // Create a promise that rejects in <ms> milliseconds
-      let storageUnitResponse = new Promise((resolve) => {
+      const storageUnitResponse = new Promise((resolve) => {
         ipcRenderer.send('removeFromStorageUnit', casketID, itemID, fastMode);
 
         if (fastMode) {
@@ -218,19 +218,18 @@ contextBridge.exposeInMainWorld('electron', {
       });
       if (fastMode) {
         return true;
-      } else {
-        let timeout = new Promise((_resolve, reject) => {
-          let id = setTimeout(() => {
-            clearTimeout(id);
-            reject();
-          }, 10000);
-        });
-        return Promise.race([storageUnitResponse, timeout]);
       }
+      const timeout = new Promise((_resolve, reject) => {
+        const id = setTimeout(() => {
+          clearTimeout(id);
+          reject();
+        }, 10000);
+      });
+      return Promise.race([storageUnitResponse, timeout]);
     },
     // Commands
     moveToStorageUnit(casketID, itemID, fastMode) {
-      let storageUnitResponse = new Promise((resolve) => {
+      const storageUnitResponse = new Promise((resolve) => {
         ipcRenderer.send('moveToStorageUnit', casketID, itemID, fastMode);
         if (fastMode) {
           resolve(fastMode);
@@ -243,16 +242,15 @@ contextBridge.exposeInMainWorld('electron', {
 
       if (fastMode) {
         return true;
-      } else {
-        let timeout = new Promise((_resolve, reject) => {
-          let id = setTimeout(() => {
-            clearTimeout(id);
-            reject();
-          }, 10000);
-        });
-
-        return Promise.race([storageUnitResponse, timeout]);
       }
+      const timeout = new Promise((_resolve, reject) => {
+        const id = setTimeout(() => {
+          clearTimeout(id);
+          reject();
+        }, 10000);
+      });
+
+      return Promise.race([storageUnitResponse, timeout]);
     },
 
     on(channel, func) {
@@ -331,16 +329,13 @@ contextBridge.exposeInMainWorld('electron', {
   store: {
     // Commands
     get(val) {
-      const key =
-        Math.random().toString(36).substr(2, 3) +
-        '-' +
-        Math.random().toString(36).substr(2, 3) +
-        '-' +
-        Math.random().toString(36).substr(2, 4);
+      const key = `${Math.random().toString(36).substr(2, 3)}-${Math.random()
+        .toString(36)
+        .substr(2, 3)}-${Math.random().toString(36).substr(2, 4)}`;
       return new Promise((resolve) => {
         ipcRenderer.send('electron-store-get', val, key);
 
-        ipcRenderer.once('electron-store-get-reply' + key, (event, arg) => {
+        ipcRenderer.once(`electron-store-get-reply${key}`, (event, arg) => {
           console.log(arg);
           resolve(arg);
         });

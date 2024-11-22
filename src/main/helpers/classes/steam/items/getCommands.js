@@ -1,5 +1,5 @@
-var axios = require('axios');
-var items = require('./index');
+const axios = require('axios');
+const items = require('./index');
 
 // RUN PROGRAMS
 class fetchItems {

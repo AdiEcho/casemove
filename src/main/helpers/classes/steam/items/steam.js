@@ -9,7 +9,7 @@ async function isLoggedInElsewhere(userSession) {
       function (err, items) {
         err;
         if (typeof items !== 'undefined') {
-          if (Object.keys(items['users']).length > 0) {
+          if (Object.keys(items.users).length > 0) {
             resolve(true);
           } else {
             resolve(false);
@@ -21,5 +21,5 @@ async function isLoggedInElsewhere(userSession) {
 }
 
 module.exports = {
-  isLoggedInElsewhere
+  isLoggedInElsewhere,
 };
