@@ -3,6 +3,7 @@ import { getValue, setValue } from './settings';
 const axios = require('axios');
 require('dotenv').config();
 const EventEmitter = require('events');
+
 class MyEmitter extends EventEmitter {}
 const pricingEmitter = new MyEmitter();
 
@@ -14,7 +15,7 @@ const pricingEmitter = new MyEmitter();
 // }
 
 async function getPrices(cas) {
-  const url = 'https://cdn.skinledger.com/casemove/prices.json';
+  // const url = 'https://cdn.skinledger.com/casemove/prices.json';
   return Promise.all([
     getPrice(cas, 'steam', 'https://prices.csgotrader.app/latest/steam.json'),
     getPrice(
@@ -135,7 +136,7 @@ class runItems {
       '(Holo-Foil)'
     );
     if (itemRow.item_wear_name !== undefined) {
-      itemNamePricing = itemRow.item_name + ' (' + itemRow.item_wear_name + ')';
+      itemNamePricing = `${itemRow.item_name} (${itemRow.item_wear_name})`;
       if (
         !this.prices[FIRST_PRICING_PROVIDER][itemNamePricing] &&
         this.prices[FIRST_PRICING_PROVIDER][itemRow.item_name]
@@ -145,47 +146,45 @@ class runItems {
     }
 
     if (this.prices[FIRST_PRICING_PROVIDER][itemNamePricing] !== undefined) {
-      let pricingDict = {
-        steam_listing: this.prices['steam'][itemNamePricing]?.last_90d,
-        buff163: this.prices['buff163'][itemNamePricing]?.starting_at?.price,
-        skinport: this.prices['skinport'][itemNamePricing]?.starting_at,
+      const pricingDict = {
+        steam_listing: this.prices.steam[itemNamePricing]?.last_90d,
+        buff163: this.prices.buff163[itemNamePricing]?.starting_at?.price,
+        skinport: this.prices.skinport[itemNamePricing]?.starting_at,
         bitskins: 0,
       };
-      if (this.prices['steam'][itemNamePricing]?.last_30d) {
+      if (this.prices.steam[itemNamePricing]?.last_30d) {
         pricingDict.steam_listing =
-          this.prices['steam'][itemNamePricing]?.last_30d;
+          this.prices.steam[itemNamePricing]?.last_30d;
       }
-      if (this.prices['steam'][itemNamePricing]?.last_7d) {
-        pricingDict.steam_listing =
-          this.prices['steam'][itemNamePricing]?.last_7d;
+      if (this.prices.steam[itemNamePricing]?.last_7d) {
+        pricingDict.steam_listing = this.prices.steam[itemNamePricing]?.last_7d;
       }
 
-      if (this.prices['steam'][itemNamePricing]?.last_24h) {
+      if (this.prices.steam[itemNamePricing]?.last_24h) {
         pricingDict.steam_listing =
-          this.prices['steam'][itemNamePricing]?.last_24h;
+          this.prices.steam[itemNamePricing]?.last_24h;
       }
       if (
-        this.prices['steam'][itemNamePricing]?.last_7d == 0 &&
-        this.prices['buff163'][itemNamePricing]?.starting_at?.price > 2000
+        this.prices.steam[itemNamePricing]?.last_7d == 0 &&
+        this.prices.buff163[itemNamePricing]?.starting_at?.price > 2000
       ) {
         pricingDict.steam_listing =
           this.prices[itemNamePricing]?.buff163.starting_at?.price * 0.8;
       }
-      itemRow['pricing'] = pricingDict;
-      return itemRow;
-    } else {
-      let pricingDict = {
-        buff163: 0,
-        steam_listing: 0,
-        skinport: 0,
-        bitskins: 0,
-      };
-      itemRow['pricing'] = pricingDict;
+      itemRow.pricing = pricingDict;
       return itemRow;
     }
+    const pricingDict = {
+      buff163: 0,
+      steam_listing: 0,
+      skinport: 0,
+      bitskins: 0,
+    };
+    itemRow.pricing = pricingDict;
+    return itemRow;
   }
   async handleItem(itemRow) {
-    let returnRows = [] as any;
+    const returnRows = [] as any;
     itemRow.forEach((element) => {
       if (element.item_name !== undefined && element.item_moveable == true) {
         this.makeSingleRequest(element).then((returnValue) => {
@@ -197,7 +196,7 @@ class runItems {
   }
 
   async handleTradeUp(itemRow) {
-    let returnRows = [] as any;
+    const returnRows = [] as any;
     itemRow.forEach((element) => {
       this.makeSingleRequest(element).then((returnValue) => {
         returnRows.push(returnValue);

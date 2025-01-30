@@ -27,13 +27,13 @@ export default function MoveModal() {
   async function cancelMe() {
     window.electron.ipcRenderer.refreshInventory();
     dispatch(closeMoveModal());
-    dispatch(cancelModal(modalData.modalPayload['key']));
+    dispatch(cancelModal(modalData.modalPayload.key));
 
     dispatch(closeMoveModal());
-    if (modalData.modalPayload['type'] == 'to') {
+    if (modalData.modalPayload.type == 'to') {
       dispatch(moveToClearAll());
     }
-    if (modalData.modalPayload['type'] == 'from') {
+    if (modalData.modalPayload.type == 'from') {
       dispatch(moveFromClearAll());
     }
     dispatch(modalResetStorageIdsToClearFrom());
@@ -44,21 +44,20 @@ export default function MoveModal() {
 
   async function runModal() {
     if (modalData.moveOpen) {
-      if (modalData.doCancel.includes(modalData.modalPayload['key']) == false) {
-        if (modalData.modalPayload['type'] == 'to') {
-
-          if (fastMode  && modalData.query.length > 1) {
+      if (modalData.doCancel.includes(modalData.modalPayload.key) == false) {
+        if (modalData.modalPayload.type == 'to') {
+          if (fastMode && modalData.query.length > 1) {
             window.electron.ipcRenderer.moveToStorageUnit(
-              modalData.modalPayload['storageID'],
-              modalData.modalPayload['itemID'],
+              modalData.modalPayload.storageID,
+              modalData.modalPayload.itemID,
               true
             );
-            await new Promise(r => setTimeout(r, waitTime));
+            await new Promise((r) => setTimeout(r, waitTime));
           } else {
             try {
               await window.electron.ipcRenderer.moveToStorageUnit(
-                modalData.modalPayload['storageID'],
-                modalData.modalPayload['itemID'],
+                modalData.modalPayload.storageID,
+                modalData.modalPayload.itemID,
                 false
               );
             } catch {
@@ -67,40 +66,36 @@ export default function MoveModal() {
           }
 
           dispatch(moveModalUpdate());
-          if (modalData.modalPayload['isLast']) {
-            dispatch(moveToClearAll( keepSearch: true ));
+          if (modalData.modalPayload.isLast) {
+            dispatch(moveToClearAll());
           }
         }
-        if (modalData.modalPayload['type'] == 'from') {
+        if (modalData.modalPayload.type == 'from') {
           if (fastMode) {
-
             window.electron.ipcRenderer.moveFromStorageUnit(
-              modalData.modalPayload['storageID'],
-              modalData.modalPayload['itemID'],
+              modalData.modalPayload.storageID,
+              modalData.modalPayload.itemID,
               true
             );
-            await new Promise(r => setTimeout(r, waitTime));
-
+            await new Promise((r) => setTimeout(r, waitTime));
           } else {
             try {
               await window.electron.ipcRenderer.moveFromStorageUnit(
-               modalData.modalPayload['storageID'],
-               modalData.modalPayload['itemID'],
-               false
-             );
-             // await new Promise(r => setTimeout(r, waitTime));
-           } catch {
-             dispatch(moveModalAddToFail());
-           }
-
+                modalData.modalPayload.storageID,
+                modalData.modalPayload.itemID,
+                false
+              );
+              // await new Promise(r => setTimeout(r, waitTime));
+            } catch {
+              dispatch(moveModalAddToFail());
+            }
           }
 
           dispatch(moveModalUpdate());
         }
-        if (modalData.modalPayload['isLast']) {
+        if (modalData.modalPayload.isLast) {
           window.electron.ipcRenderer.refreshInventory();
         }
-
       }
     }
   }
@@ -120,7 +115,7 @@ export default function MoveModal() {
   return (
     <Transition.Root
       show={
-        modalData.doCancel.includes(modalData.modalPayload['key'])
+        modalData.doCancel.includes(modalData.modalPayload.key)
           ? false
           : Object.keys(modalData.modalPayload).length == 0
           ? devMode
@@ -165,9 +160,9 @@ export default function MoveModal() {
             <div className="inline-block align-bottom bg-white dark:bg-dark-level-two rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
               <div>
                 <div className="mx-auto flex items-center  justify-center h-14 w-14 rounded-full bg-blue-500 dark:bg-blue-700">
-                  <span className="animate-ping absolute inline-flex h-14 w-14 rounded-full dark:bg-blue-700 opacity-75"></span>
+                  <span className="animate-ping absolute inline-flex h-14 w-14 rounded-full dark:bg-blue-700 opacity-75" />
                   <span className="text-white dark:text-dark-white">
-                    {modalData.modalPayload['number']}
+                    {modalData.modalPayload.number}
                   </span>
                 </div>
                 <div className="mt-3 text-center sm:mt-5">
@@ -175,12 +170,14 @@ export default function MoveModal() {
                     as="h3"
                     className="text-lg leading-6 font-medium text-gray-900 dark:text-dark-white"
                   >
-                    {modalData.modalPayload['name']}
+                    {modalData.modalPayload.name}
                   </Dialog.Title>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500">
                       Please wait while the app moves your items.
-                      {fastMode == false ? ' \nWant to speed this up? Enable fastmove in the settings.': ''}
+                      {fastMode == false
+                        ? ' \nWant to speed this up? Enable fastmove in the settings.'
+                        : ''}
                     </p>
 
                     {modalData.totalFailed == 0 ? (
@@ -194,7 +191,6 @@ export default function MoveModal() {
                 </div>
               </div>
 
-
               <div className="mt-5 sm:mt-6">
                 <button
                   type="button"
@@ -205,20 +201,13 @@ export default function MoveModal() {
                 </button>
               </div>
               <div className="flex flex-wrap content-center items-center justify-center mr-3 mt-2 text-gray-400 dark:text-dark-white text-xs font-medium uppercase tracking-wide">
-
-          {/* This element is to trick the browser into centering the modal contents.
+                {/* This element is to trick the browser into centering the modal contents.
             <div>
               ENABLE FAST MODE
             </div> */}
-
-
-
-
-          </div>
+              </div>
             </div>
-
           </Transition.Child>
-
         </div>
       </Dialog>
     </Transition.Root>
